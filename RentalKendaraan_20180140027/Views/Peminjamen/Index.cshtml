@@ -7,7 +7,7 @@
 <h2>Tambah Data Peminjaman</h2>
 
 <p>
-    <a asp-action="Create">Tambah Data Baru</a>
+    <a asp-action="Index">Tambah Data Baru</a>
 </p>
 <table class="table">
     <thead>
@@ -49,9 +49,9 @@
                 @Html.DisplayFor(modelItem => item.Biaya)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPeminjaman">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPeminjaman">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPeminjaman">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.IdPeminjaman"><i class=" glyphicon glyphicon-pencil"></i></a> |
+                <a asp-action="Details" asp-route-id="@item.IdPeminjaman"><i class="glyphicon glyphicon-eye-open"></i></a> |
+                <a asp-action="Delete" asp-route-id="@item.IdPeminjaman"><i class="glyphicon glyphicon-trash"></i></a>
             </td>
         </tr>
 }
