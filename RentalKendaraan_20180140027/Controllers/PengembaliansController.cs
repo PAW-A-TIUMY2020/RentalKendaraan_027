@@ -21,7 +21,8 @@ namespace RentalKendaraan_20180140027.Controllers
         // GET: Pengembalians
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Pengembalian.ToListAsync());
+            var rentalKendaraanContext = _context.Pengembalian.Include(p => p.IdKondisiNavigation).Include(p => p.IdPeminjamanNavigation);
+            return View(await rentalKendaraanContext.ToListAsync());
         }
 
         // GET: Pengembalians/Details/5
@@ -33,6 +34,8 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var pengembalian = await _context.Pengembalian
+                .Include(p => p.IdKondisiNavigation)
+                .Include(p => p.IdPeminjamanNavigation)
                 .FirstOrDefaultAsync(m => m.IdPengembalian == id);
             if (pengembalian == null)
             {
@@ -45,6 +48,8 @@ namespace RentalKendaraan_20180140027.Controllers
         // GET: Pengembalians/Create
         public IActionResult Create()
         {
+            ViewData["IdKondisi"] = new SelectList(_context.KondisiKendaraan, "IdKondisi", "IdKondisi");
+            ViewData["IdPeminjaman"] = new SelectList(_context.Peminjaman, "IdPeminjaman", "IdPeminjaman");
             return View();
         }
 
@@ -53,7 +58,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPengembalian,TglPengembalian,IdPeminjaaman,IdKondisi,Denda")] Pengembalian pengembalian)
+        public async Task<IActionResult> Create([Bind("IdPengembalian,TglPengembalian,Denda,IdPeminjaman,IdKondisi")] Pengembalian pengembalian)
         {
             if (ModelState.IsValid)
             {
@@ -61,6 +66,8 @@ namespace RentalKendaraan_20180140027.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdKondisi"] = new SelectList(_context.KondisiKendaraan, "IdKondisi", "IdKondisi", pengembalian.IdKondisi);
+            ViewData["IdPeminjaman"] = new SelectList(_context.Peminjaman, "IdPeminjaman", "IdPeminjaman", pengembalian.IdPeminjaman);
             return View(pengembalian);
         }
 
@@ -77,6 +84,8 @@ namespace RentalKendaraan_20180140027.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdKondisi"] = new SelectList(_context.KondisiKendaraan, "IdKondisi", "IdKondisi", pengembalian.IdKondisi);
+            ViewData["IdPeminjaman"] = new SelectList(_context.Peminjaman, "IdPeminjaman", "IdPeminjaman", pengembalian.IdPeminjaman);
             return View(pengembalian);
         }
 
@@ -85,7 +94,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPengembalian,TglPengembalian,IdPeminjaaman,IdKondisi,Denda")] Pengembalian pengembalian)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPengembalian,TglPengembalian,Denda,IdPeminjaman,IdKondisi")] Pengembalian pengembalian)
         {
             if (id != pengembalian.IdPengembalian)
             {
@@ -112,6 +121,8 @@ namespace RentalKendaraan_20180140027.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdKondisi"] = new SelectList(_context.KondisiKendaraan, "IdKondisi", "IdKondisi", pengembalian.IdKondisi);
+            ViewData["IdPeminjaman"] = new SelectList(_context.Peminjaman, "IdPeminjaman", "IdPeminjaman", pengembalian.IdPeminjaman);
             return View(pengembalian);
         }
 
@@ -124,6 +135,8 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var pengembalian = await _context.Pengembalian
+                .Include(p => p.IdKondisiNavigation)
+                .Include(p => p.IdPeminjamanNavigation)
                 .FirstOrDefaultAsync(m => m.IdPengembalian == id);
             if (pengembalian == null)
             {

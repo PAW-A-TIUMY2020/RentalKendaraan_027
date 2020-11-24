@@ -19,10 +19,36 @@ namespace RentalKendaraan_20180140027.Controllers
         }
 
         // GET: Peminjamen
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
-            return View(await _context.Peminjaman.ToListAsync());
+            //buat list menyimpan ketersidaan
+            var ktsdList = new List<string>();
+            //query menggambil data
+            var ktsdQuery = from d in _context.Peminjaman orderby d.IdKendaraanNavigation select d.IdKendaraanNavigation.NamaKendaraan;
+
+            ktsdList.AddRange(ktsdQuery.Distinct());
+
+            //untuk nampilkan di view
+            ViewBag.ktsd = new SelectList(ktsdList);
+
+            //panggil db contect
+            var menu = from m in _context.Peminjaman.Include(p => p.IdCustomerNavigation).Include(p =>p.IdJaminanNavigation).Include(p => p.IdKendaraanNavigation)select m;
+
+            //untuk memilih dropdownList ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
+            {
+                menu = menu.Where(x => x.IdKendaraanNavigation.NamaKendaraan == ktsd);
+            }
+
+            //untuk search data
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menu = menu.Where(s => s.Biaya.ToString().Contains(searchString) || s.IdCustomerNavigation.NamaCustomer.Contains(searchString) || s.IdJaminanNavigation.NamaJaminan.Contains(searchString));
+            }
+
+            return View(await menu.ToListAsync());
         }
+        
 
         // GET: Peminjamen/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -33,6 +59,9 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var peminjaman = await _context.Peminjaman
+                .Include(p => p.IdCustomerNavigation)
+                .Include(p => p.IdJaminanNavigation)
+                .Include(p => p.IdKendaraanNavigation)
                 .FirstOrDefaultAsync(m => m.IdPeminjaman == id);
             if (peminjaman == null)
             {
@@ -45,6 +74,9 @@ namespace RentalKendaraan_20180140027.Controllers
         // GET: Peminjamen/Create
         public IActionResult Create()
         {
+            ViewData["IdCustomer"] = new SelectList(_context.Customer, "IdCustomer", "IdCustomer");
+            ViewData["IdJaminan"] = new SelectList(_context.Jaminan, "IdJaminan", "IdJaminan");
+            ViewData["IdKendaraan"] = new SelectList(_context.Kendaraan, "IdKendaraan", "IdKendaraan");
             return View();
         }
 
@@ -53,7 +85,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdPeminjaman,TglPeminjaman,IdKendaraan,IdCustomer,IdJaminan,Biaya")] Peminjaman peminjaman)
+        public async Task<IActionResult> Create([Bind("IdPeminjaman,TglPeminjaman,Biaya,IdKendaraan,IdCustomer,IdJaminan")] Peminjaman peminjaman)
         {
             if (ModelState.IsValid)
             {
@@ -61,6 +93,9 @@ namespace RentalKendaraan_20180140027.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdCustomer"] = new SelectList(_context.Customer, "IdCustomer", "IdCustomer", peminjaman.IdCustomer);
+            ViewData["IdJaminan"] = new SelectList(_context.Jaminan, "IdJaminan", "IdJaminan", peminjaman.IdJaminan);
+            ViewData["IdKendaraan"] = new SelectList(_context.Kendaraan, "IdKendaraan", "IdKendaraan", peminjaman.IdKendaraan);
             return View(peminjaman);
         }
 
@@ -77,6 +112,9 @@ namespace RentalKendaraan_20180140027.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdCustomer"] = new SelectList(_context.Customer, "IdCustomer", "IdCustomer", peminjaman.IdCustomer);
+            ViewData["IdJaminan"] = new SelectList(_context.Jaminan, "IdJaminan", "IdJaminan", peminjaman.IdJaminan);
+            ViewData["IdKendaraan"] = new SelectList(_context.Kendaraan, "IdKendaraan", "IdKendaraan", peminjaman.IdKendaraan);
             return View(peminjaman);
         }
 
@@ -85,7 +123,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPeminjaman,TglPeminjaman,IdKendaraan,IdCustomer,IdJaminan,Biaya")] Peminjaman peminjaman)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPeminjaman,TglPeminjaman,Biaya,IdKendaraan,IdCustomer,IdJaminan")] Peminjaman peminjaman)
         {
             if (id != peminjaman.IdPeminjaman)
             {
@@ -112,6 +150,9 @@ namespace RentalKendaraan_20180140027.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdCustomer"] = new SelectList(_context.Customer, "IdCustomer", "IdCustomer", peminjaman.IdCustomer);
+            ViewData["IdJaminan"] = new SelectList(_context.Jaminan, "IdJaminan", "IdJaminan", peminjaman.IdJaminan);
+            ViewData["IdKendaraan"] = new SelectList(_context.Kendaraan, "IdKendaraan", "IdKendaraan", peminjaman.IdKendaraan);
             return View(peminjaman);
         }
 
@@ -124,6 +165,9 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var peminjaman = await _context.Peminjaman
+                .Include(p => p.IdCustomerNavigation)
+                .Include(p => p.IdJaminanNavigation)
+                .Include(p => p.IdKendaraanNavigation)
                 .FirstOrDefaultAsync(m => m.IdPeminjaman == id);
             if (peminjaman == null)
             {

@@ -16,13 +16,13 @@
                 @Html.DisplayNameFor(model => model.TglPengembalian)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdPeminjaaman)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdKondisi)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Denda)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdKondisiNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPeminjamanNavigation)
             </th>
             <th></th>
         </tr>
@@ -34,13 +34,13 @@
                 @Html.DisplayFor(modelItem => item.TglPengembalian)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdPeminjaaman)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdKondisi)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Denda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdKondisiNavigation.IdKondisi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdPeminjamanNavigation.IdPeminjaman)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdPengembalian">Edit</a> |

@@ -10,10 +10,13 @@ namespace RentalKendaraan_20180140027.Models
 
         [Required(ErrorMessage = "Tgl peminjaman wajib diisi")]
         public DateTime? TglPengembalian { get; set; }
-        public int? IdPeminjaaman { get; set; }
-        public int? IdKondisi { get; set; }
+        public int? Denda { get; set; }
+        public int? IdPeminjaman { get; set; }
 
         [Required(ErrorMessage = "Denda wajib diisi")]
-        public int? Denda { get; set; }
+        public int? IdKondisi { get; set; }
+
+        public KondisiKendaraan IdKondisiNavigation { get; set; }
+        public Peminjaman IdPeminjamanNavigation { get; set; }
     }
 }

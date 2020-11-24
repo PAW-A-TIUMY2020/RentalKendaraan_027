@@ -19,9 +19,33 @@ namespace RentalKendaraan_20180140027.Controllers
         }
 
         // GET: Kendaraans
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ktsd, string searchString)
         {
-            return View(await _context.Kendaraan.ToListAsync());
+            //buat list menyimpan ketersidaan
+            var ktsdList = new List<string>();
+            //query menggambil data
+            var ktsdQuery = from d in _context.Kendaraan orderby d.Ketersediaan select d.Ketersediaan;
+
+            ktsdList.AddRange(ktsdQuery.Distinct());
+
+            //untuk nampilkan di view
+            ViewBag.ktsd = new SelectList(ktsdList);
+
+            //panggil db contect
+            var menu = from m in _context.Kendaraan.Include(k => k.IdJenisKendaraanNavigation) select m;
+
+            //untuk memilih dropdownList ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
+            {
+                menu = menu.Where(x => x.Ketersediaan == ktsd);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menu = menu.Where(s => s.NoPolisi.Contains(searchString) || s.NamaKendaraan.Contains(searchString) || s.NoStnk.Contains(searchString));
+            }
+            
+            return View(await menu.ToListAsync());
         }
 
         // GET: Kendaraans/Details/5
@@ -33,6 +57,7 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var kendaraan = await _context.Kendaraan
+                .Include(k => k.IdJenisKendaraanNavigation)
                 .FirstOrDefaultAsync(m => m.IdKendaraan == id);
             if (kendaraan == null)
             {
@@ -45,6 +70,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // GET: Kendaraans/Create
         public IActionResult Create()
         {
+            ViewData["IdJenisKendaraan"] = new SelectList(_context.JenisKendaraan, "IdJenisKendaraan", "IdJenisKendaraan");
             return View();
         }
 
@@ -53,7 +79,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdKendaraan,NamaKendaraan,NoPolisi,NoStnk,IdJenisKendaraan,Ketersediaan")] Kendaraan kendaraan)
+        public async Task<IActionResult> Create([Bind("IdKendaraan,NamaKendaraan,NoPolisi,NoStnk,Ketersediaan,IdJenisKendaraan")] Kendaraan kendaraan)
         {
             if (ModelState.IsValid)
             {
@@ -61,6 +87,7 @@ namespace RentalKendaraan_20180140027.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdJenisKendaraan"] = new SelectList(_context.JenisKendaraan, "IdJenisKendaraan", "IdJenisKendaraan", kendaraan.IdJenisKendaraan);
             return View(kendaraan);
         }
 
@@ -77,6 +104,7 @@ namespace RentalKendaraan_20180140027.Controllers
             {
                 return NotFound();
             }
+            ViewData["IdJenisKendaraan"] = new SelectList(_context.JenisKendaraan, "IdJenisKendaraan", "IdJenisKendaraan", kendaraan.IdJenisKendaraan);
             return View(kendaraan);
         }
 
@@ -85,7 +113,7 @@ namespace RentalKendaraan_20180140027.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdKendaraan,NamaKendaraan,NoPolisi,NoStnk,IdJenisKendaraan,Ketersediaan")] Kendaraan kendaraan)
+        public async Task<IActionResult> Edit(int id, [Bind("IdKendaraan,NamaKendaraan,NoPolisi,NoStnk,Ketersediaan,IdJenisKendaraan")] Kendaraan kendaraan)
         {
             if (id != kendaraan.IdKendaraan)
             {
@@ -112,6 +140,7 @@ namespace RentalKendaraan_20180140027.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdJenisKendaraan"] = new SelectList(_context.JenisKendaraan, "IdJenisKendaraan", "IdJenisKendaraan", kendaraan.IdJenisKendaraan);
             return View(kendaraan);
         }
 
@@ -124,6 +153,7 @@ namespace RentalKendaraan_20180140027.Controllers
             }
 
             var kendaraan = await _context.Kendaraan
+                .Include(k => k.IdJenisKendaraanNavigation)
                 .FirstOrDefaultAsync(m => m.IdKendaraan == id);
             if (kendaraan == null)
             {

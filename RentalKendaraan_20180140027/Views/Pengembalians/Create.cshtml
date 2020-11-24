@@ -23,19 +23,17 @@
                 <span asp-validation-for="TglPengembalian" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IdPeminjaaman" class="control-label"></label>
-                <input asp-for="IdPeminjaaman" class="form-control" />
-                <span asp-validation-for="IdPeminjaaman" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdKondisi" class="control-label"></label>
-                <input asp-for="IdKondisi" class="form-control" />
-                <span asp-validation-for="IdKondisi" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Denda" class="control-label"></label>
                 <input asp-for="Denda" class="form-control" />
                 <span asp-validation-for="Denda" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdPeminjaman" class="control-label"></label>
+                <select asp-for="IdPeminjaman" class ="form-control" asp-items="ViewBag.IdPeminjaman"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdKondisi" class="control-label"></label>
+                <select asp-for="IdKondisi" class ="form-control" asp-items="ViewBag.IdKondisi"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />

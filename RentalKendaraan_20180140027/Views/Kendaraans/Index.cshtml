@@ -7,8 +7,16 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Tambah Data Baru</a>
 </p>
+@using (Html.BeginForm("Index", "Kendaraans", FormMethod.Get))
+{
+    <p>
+        Ketersediaan: @Html.DropDownList("ktsd", "Pilih Ketersediaan")
+        Cari Data : @Html.TextBox("searchString")
+        <input type="submit" value="filter"/>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -22,10 +30,10 @@
                 @Html.DisplayNameFor(model => model.NoStnk)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdJenisKendaraan)
+                @Html.DisplayNameFor(model => model.Ketersediaan)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Ketersediaan)
+                @Html.DisplayNameFor(model => model.IdJenisKendaraanNavigation)
             </th>
             <th></th>
         </tr>
@@ -43,10 +51,10 @@
                 @Html.DisplayFor(modelItem => item.NoStnk)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdJenisKendaraan)
+                @Html.DisplayFor(modelItem => item.Ketersediaan)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Ketersediaan)
+                @Html.DisplayFor(modelItem => item.IdJenisKendaraanNavigation.IdJenisKendaraan)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.IdKendaraan">Edit</a> |

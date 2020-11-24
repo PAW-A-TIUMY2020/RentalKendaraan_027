@@ -24,7 +24,7 @@ namespace RentalKendaraan_20180140027.Models
         public virtual DbSet<Peminjaman> Peminjaman { get; set; }
         public virtual DbSet<Pengembalian> Pengembalian { get; set; }
 
-       
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,6 +56,11 @@ namespace RentalKendaraan_20180140027.Models
                     .HasColumnName("No_HP")
                     .HasMaxLength(13)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.IdGenderNavigation)
+                    .WithMany(p => p.Customer)
+                    .HasForeignKey(d => d.IdGender)
+                    .HasConstraintName("FK__Customer__ID_Gen__34C8D9D1");
             });
 
             modelBuilder.Entity<Gender>(entity =>
@@ -130,6 +135,11 @@ namespace RentalKendaraan_20180140027.Models
                     .HasColumnName("No_STNK")
                     .HasMaxLength(8)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.IdJenisKendaraanNavigation)
+                    .WithMany(p => p.Kendaraan)
+                    .HasForeignKey(d => d.IdJenisKendaraan)
+                    .HasConstraintName("FK__Kendaraan__ID_Je__35BCFE0A");
             });
 
             modelBuilder.Entity<KondisiKendaraan>(entity =>
@@ -165,6 +175,21 @@ namespace RentalKendaraan_20180140027.Models
                 entity.Property(e => e.TglPeminjaman)
                     .HasColumnName("Tgl_Peminjaman")
                     .HasColumnType("datetime");
+
+                entity.HasOne(d => d.IdCustomerNavigation)
+                    .WithMany(p => p.Peminjaman)
+                    .HasForeignKey(d => d.IdCustomer)
+                    .HasConstraintName("FK__Peminjama__ID_Cu__37A5467C");
+
+                entity.HasOne(d => d.IdJaminanNavigation)
+                    .WithMany(p => p.Peminjaman)
+                    .HasForeignKey(d => d.IdJaminan)
+                    .HasConstraintName("FK__Peminjama__ID_Ja__38996AB5");
+
+                entity.HasOne(d => d.IdKendaraanNavigation)
+                    .WithMany(p => p.Peminjaman)
+                    .HasForeignKey(d => d.IdKendaraan)
+                    .HasConstraintName("FK__Peminjama__ID_Ke__36B12243");
             });
 
             modelBuilder.Entity<Pengembalian>(entity =>
@@ -177,11 +202,21 @@ namespace RentalKendaraan_20180140027.Models
 
                 entity.Property(e => e.IdKondisi).HasColumnName("ID_Kondisi");
 
-                entity.Property(e => e.IdPeminjaaman).HasColumnName("ID_Peminjaaman");
+                entity.Property(e => e.IdPeminjaman).HasColumnName("ID_Peminjaman");
 
                 entity.Property(e => e.TglPengembalian)
                     .HasColumnName("Tgl_Pengembalian")
                     .HasColumnType("datetime");
+
+                entity.HasOne(d => d.IdKondisiNavigation)
+                    .WithMany(p => p.Pengembalian)
+                    .HasForeignKey(d => d.IdKondisi)
+                    .HasConstraintName("FK__Pengembal__ID_Ko__3B75D760");
+
+                entity.HasOne(d => d.IdPeminjamanNavigation)
+                    .WithMany(p => p.Pengembalian)
+                    .HasForeignKey(d => d.IdPeminjaman)
+                    .HasConstraintName("FK__Pengembal__ID_Pe__398D8EEE");
             });
         }
     }
