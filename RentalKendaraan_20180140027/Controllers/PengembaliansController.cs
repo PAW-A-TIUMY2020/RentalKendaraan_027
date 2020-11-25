@@ -19,11 +19,72 @@ namespace RentalKendaraan_20180140027.Controllers
         }
 
         // GET: Pengembalians
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
-            var rentalKendaraanContext = _context.Pengembalian.Include(p => p.IdKondisiNavigation).Include(p => p.IdPeminjamanNavigation);
-            return View(await rentalKendaraanContext.ToListAsync());
+            //buat list menyimpan ketersidaan
+            var ktsdList = new List<string>();
+            //query menggambil data
+            var ktsdQuery = from d in _context.Pengembalian orderby d.IdKondisiNavigation select d.IdKondisiNavigation.NamaKondisi;
+
+            ktsdList.AddRange(ktsdQuery.Distinct());
+
+            //untuk nampilkan di view
+            ViewBag.ktsd = new SelectList(ktsdList);
+
+            //panggil db contect
+            var menu = from m in _context.Pengembalian.Include(p => p.IdKondisiNavigation).Include(p => p.IdKondisiNavigation) select m;
+
+            //untuk memilih dropdownList ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
+            {
+                menu = menu.Where(x => x.IdKondisiNavigation.NamaKondisi == ktsd);
+            }
+
+            //untuk search data
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menu = menu.Where(s => s.Denda.ToString().Contains(searchString) );
+            }
+
+            //untuk sorting
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DataSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    menu = menu.OrderByDescending(s => s.IdKondisiNavigation.NamaKondisi);
+                    break;
+                case "Date":
+                    menu = menu.OrderBy(s => s.TglPengembalian);
+                    break;
+                case "date_desc":
+                    menu = menu.OrderByDescending(s => s.TglPengembalian);
+                    break;
+                default: //name ascending
+                    menu = menu.OrderBy(s => s.IdKondisiNavigation.NamaKondisi);
+                    break;
+
+            }
+
+            //membuat pagedList
+            ViewData["CurrentSort"] = sortOrder;
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+
+            }
+
+            int pageSize = 3;
+
+            return View(await PaginatedList<Pengembalian>.CreateAsync(menu.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
 
         // GET: Pengembalians/Details/5
         public async Task<IActionResult> Details(int? id)
